@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply text-bunker-300 bg-bunker-950;
+  background-image: url("/bg.svg");
+}
+
+body::-webkit-scrollbar {
+  @apply bg-bunker-900/20 w-2;
+}
+
+body::-webkit-scrollbar-thumb {
+  @apply bg-red-300 rounded-sm;
+}

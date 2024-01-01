@@ -1,0 +1,28 @@
+---
+import RTableOfContent from "./TableOfContent.astro";
+
+interface TableOfContentsItem {
+  title: string;
+  url: string;
+  subItems: TableOfContentsItem[];
+}
+
+interface Props {
+  tableOfContents: TableOfContentsItem[];
+}
+
+const { tableOfContents } = Astro.props;
+---
+
+<ol class="flex flex-col flex-wrap gap-1">
+  {
+    tableOfContents.map((heading) => (
+      <li>
+        <a href={heading.url} class="hover:text-red-300">
+          {heading.title}
+        </a>
+        <div class="ml-6">{heading.subItems.length > 0 && <RTableOfContent tableOfContents={heading.subItems} />}</div>
+      </li>
+    ))
+  }
+</ol>

@@ -1,0 +1,81 @@
+---
+import { getCollection } from "astro:content";
+import { Image } from "astro:assets";
+import PostLayout from "../../layouts/PostLayout.astro";
+import TableOfContent from "../../components/TableOfContent.astro";
+
+export async function getStaticPaths() {
+  const blogEntries = await getCollection("posts");
+  return blogEntries.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content, headings } = await entry.render();
+
+interface TableOfContentsItem {
+  title: string;
+  url: string;
+  subItems: TableOfContentsItem[];
+}
+
+let tableOfContents: TableOfContentsItem[] = [];
+let previousDepth = -1;
+
+headings.forEach((heading) => {
+  if (heading.depth === 1) return;
+
+  if (heading.depth === 2) {
+    tableOfContents.push({ title: heading.text, url: "#" + heading.slug, subItems: [] });
+  }
+
+  if (heading.depth === 3 && previousDepth === 2) {
+    tableOfContents[tableOfContents.length - 1].subItems.push({
+      title: heading.text,
+      url: "#" + heading.slug,
+      subItems: [],
+    });
+  }
+
+  previousDepth = heading.depth;
+});
+---
+
+<PostLayout title={entry.data.title}>
+  <h1 class="text-4xl font-medium text-bunker-50">{entry.data.title}</h1>
+
+  <p class="text-bunker-300 mt-4">
+    {
+      entry.data.pubDate.toLocaleDateString("es-ES", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })
+    }
+  </p>
+
+  <ul class="flex flex-wrap gap-1 mt-4">
+    {
+      entry.data.tags.map((tag) => (
+        <li>
+          <span class="flex items-center justify-center rounded-full py-1 text-xs font-medium px-3 leading-5 text-red-300 bg-red-300/10">
+            {tag}
+          </span>
+        </li>
+      ))
+    }
+  </ul>
+
+  <Image class="object-cover w-full aspect-video rounded-xl mt-4" src={entry.data.cover} alt={entry.data.coverAlt} />
+
+  <div class="bg-bunker-900/50 rounded-xl px-8 py-4 mt-8">
+    <div class="text-bunker-100 font-medium text-lg">Tabla de contenido</div>
+    <TableOfContent tableOfContents={tableOfContents} />
+  </div>
+
+  <article class="prose mt-4">
+    <Content />
+  </article>
+</PostLayout>

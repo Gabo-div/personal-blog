@@ -1,0 +1,14 @@
+---
+import NavigationItem from "./NavigationItem.astro";
+---
+
+<nav class="px-8 container max-w-xl mx-auto flex justify-center py-4">
+  <ul
+    class="w-full min-h-8 flex justify-between gap-[1px] bg-bunker-950/50 rounded-full overflow-hidden text-center font-medium"
+  >
+    <NavigationItem href="/" text="Home" />
+    <NavigationItem href="/about" text="About" />
+    <NavigationItem href="/tags" text="Tags" />
+    <NavigationItem href="/blog" text="Blog" />
+  </ul>
+</nav>
